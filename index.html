@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkPal - AI-Powered Parking Sign Reader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: #ffffff;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1f2937;
+        }
+
+        .header-cta {
+            background: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .header-cta:hover {
+            background: #2563eb;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 6rem 0;
+            color: white;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .hero-image {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 280px;
+            height: 560px;
+            background: #1f2937;
+            border-radius: 30px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .phone-mockup.secondary {
+            position: absolute;
+            top: 40px;
+            right: -40px;
+            background: #fbbf24;
+            transform: rotate(15deg);
+        }
+
+        .app-screen {
+            background: #1f2937;
+            height: 100%;
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-screen h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .camera-view {
+            width: 200px;
+            height: 150px;
+            background: #374151;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .scan-button {
+            background: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* App Store Button */
+        .app-store-btn {
+            display: inline-block;
+            background: #000;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .app-store-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .two-column.reverse {
+            direction: rtl;
+        }
+
+        .two-column.reverse > * {
+            direction: ltr;
+        }
+
+        /* Feature Cards */
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Reviews Section */
+        .reviews {
+            background: #f9fafb;
+        }
+
+        .review-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .review-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-text {
+            color: #374151;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .reviewer {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* Footer */
+        footer {
+            background: #3b82f6;
+            color: white;
+            padding: 3rem 0;
+            border-radius: 20px 20px 0 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-left p {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .footer-right h4 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🚗 ParkPal</div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#how-it-works">How it works</a></li>
+                        <li><a href="#benefits">Benefits</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#reviews">Reviews</a></li>
+                    </ul>
+                </nav>
+                <a href="#download" class="header-cta">Download on the App Store</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>ParkPal: Read parking signs instantly.</h1>
+                    <p>#1 app for reading and understanding parking signs with AI. Never get a parking ticket again.</p>
+                    <a href="#download" class="app-store-btn">Download on the App Store</a>
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <span class="stat-number">50,000+</span>
+                            <span class="stat-label">Tickets Avoided</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-number">100,000+</span>
+                            <span class="stat-label">Downloads</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="mockup1.png" alt="ParkPal app interface showing parking sign analysis" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">The Parking Sign Reader App for iOS</h2>
+            <p class="section-subtitle">ParkPal has helped over 100,000 people understand parking signs and avoid expensive tickets with AI-powered sign recognition.</p>
+            
+            <div class="two-column">
+                <div>
+                    <img src="mockup2.png" alt="ParkPal app interface showing sign analysis" style="max-width: 100%; height: auto;">
+                </div>
+                <div>
+                    <div class="feature-cards">
+                        <div class="feature-card">
+                            <div class="feature-icon">🤖</div>
+                            <h3>AI Recognition</h3>
+                            <p>Advanced AI instantly reads and interprets any parking sign</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3>Instant Results</h3>
+                            <p>Get clear yes/no answers about parking in seconds</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🛡️</div>
+                            <h3>Save Money</h3>
+                            <p>Avoid expensive parking tickets and fines</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔒</div>
+                            <h3>Privacy First</h3>
+                            <p>All processing happens on your device</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="two-column">
+                <div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem; color: #1f2937;">Gain insight into parking rules</h2>
+                    <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 2rem;">Analyze parking signs with our AI-powered recognition system</p>
+                    <p style="color: #374151; line-height: 1.6; margin-bottom: 2rem;">
+                        ParkPal's advanced AI technology can read and understand any parking sign, from simple "No Parking" signs to complex time-restricted zones. Our app helps you identify the exact parking rules, time restrictions, and any special conditions that apply to your parking spot.
+                    </p>
+                </div>
+                <div>
+                    <div class="phone-mockup" style="margin: 0 auto;">
+                        <div class="app-screen">
+                            <h3>Parking Analysis</h3>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">⏰</div>
+                                <div style="background: #10b981; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                    CAN PARK
+                                </div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">
+                                    2-hour limit<br>
+                                    Mon-Fri 8AM-6PM
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="two-column reverse">
+                <div>
+                    <div class="phone-mockup" style="margin: 0 auto;">
+                        <div class="app-screen">
+                            <h3>Recording History</h3>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 1rem;">📊</div>
+                                <div style="background: #6366f1; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                    Recent Scans
+                                </div>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">
+                                    May 2023<br>
+                                    Tue 02 - No Parking<br>
+                                    Wed 03 - 2hr Limit
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem; color: #1f2937;">Save your parking scans</h2>
+                    <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 2rem;">Keep track of your parking decisions and learn from patterns</p>
+                    <ul style="color: #374151; line-height: 1.8; margin-bottom: 2rem;">
+                        <li>✓ Show parking history to your insurance</li>
+                        <li>✓ Help you identify parking patterns</li>
+                        <li>✓ Track parking costs and time limits</li>
+                        <li>✓ Build confidence in parking decisions</li>
+                    </ul>
+                    <a href="#download" class="app-store-btn">Download on the App Store</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reviews">
+        <div class="container">
+            <h2 class="section-title">App reviews</h2>
+            <div class="review-cards">
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"ParkPal saved me from getting a $75 ticket! The AI instantly recognized the 'No Parking' sign that I completely missed. This app is a lifesaver!"</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">S</div>
+                        <div class="reviewer-name">Sarah M.</div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Finally, an app that actually understands parking signs! No more confusion about time restrictions or permit requirements. Highly recommend!"</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">M</div>
+                        <div class="reviewer-name">Mike R.</div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"As someone who travels frequently, ParkPal has been invaluable. It works everywhere and gives me confidence when parking in unfamiliar areas."</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">J</div>
+                        <div class="reviewer-name">Jennifer L.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="two-column">
+                <div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem; color: #1f2937;">Read parking signs today</h2>
+                    <a href="#download" class="app-store-btn">Download on the App Store</a>
+                </div>
+                <div>
+                    <div class="phone-mockup" style="margin: 0 auto;">
+                        <div class="app-screen">
+                            <h3>Try Premium</h3>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">⭐</div>
+                                <div style="background: #fbbf24; color: #000; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                    PREMIUM FEATURES
+                                </div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">
+                                    Unlimited scans<br>
+                                    Advanced analytics<br>
+                                    Priority support
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h3>🚗 ParkPal</h3>
+                    <p>The Parking Sign Reader App for iOS</p>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">© 2024 ParkPal. All rights reserved.</p>
+                </div>
+                <div class="footer-right">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:support@parkpal.app">Contact us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Use</a></li>
+                    </ul>
+                </div>
+                <a href="#download" class="app-store-btn">Download on the App Store</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 
